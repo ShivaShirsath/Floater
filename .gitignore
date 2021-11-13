@@ -13,3 +13,4 @@ app/build/
 /.idea
 .project
 .settings/
+androidTest/
