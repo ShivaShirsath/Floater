@@ -1,6 +1,8 @@
 .gradle
 .gradle/
+/gradle
 gradle/
+
 local.properties
 
 /local.properties
