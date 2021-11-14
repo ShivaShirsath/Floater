@@ -2,17 +2,16 @@ package floaterr.floater;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.IBinder;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 
 public class FloatingView extends Service {
 
@@ -23,23 +22,6 @@ public class FloatingView extends Service {
     @Override public IBinder onBind(Intent intent) {
         return null;
     }
-	private Drawable getDrawableWithRadius() {
-
-		GradientDrawable gradientDrawable   =   new GradientDrawable();
-		gradientDrawable.setCornerRadii(new float[]{
-			25, // Top    Left  Start 
-			25, // Top    Left  Top
-			25, // Top    Right Top
-			25, // Top    Right End
-			25, // Bottom Right End
-			25, // Bottom Right Bottom
-			25, // Bottom Left  Bottom
-			25  // Bottom Left  Start
-		});
-		gradientDrawable.setColor(Color.argb(128, 255, 128, 0));
-		return gradientDrawable;
-	}
-	
     @Override public void onCreate() {
         super.onCreate();
 
@@ -57,11 +39,10 @@ public class FloatingView extends Service {
 			PixelFormat.TRANSLUCENT
 		);
         parameters.gravity = Gravity.CENTER;
-		
+
         parameters.x = 0;
         parameters.y = 0;
 
-		ll.setBackgroundColor(Color.parseColor("#ff8800"));
 		ll.setPadding(25, 25, 25, 25);
 		ll.setBackground(getDrawableWithRadius());
 		//ll.addView(new View(this));
@@ -69,24 +50,19 @@ public class FloatingView extends Service {
         wm.addView(ll, parameters);
 
         ll.setOnTouchListener(new View.OnTouchListener() {
-				double x;
-				double y;
-				double pressedX;
-				double pressedY;
-
-				@Override public boolean onTouch(View v, MotionEvent event) {
-
+				double x, y, X, Y;
+				@Override public boolean onTouch(View view, MotionEvent event) {
 					switch (event.getAction()) {
 						case MotionEvent.ACTION_DOWN:
-							x = parameters.x; y = parameters.y;
-							pressedX = event.getRawX(); pressedY = event.getRawY();
+							x = parameters.x; X = event.getRawX();
+							y = parameters.y; Y = event.getRawY();
 						break;
-
 						case MotionEvent.ACTION_MOVE:
-							parameters.x = (int) (x + (event.getRawX() - pressedX)); parameters.y = (int) (y + (event.getRawY() - pressedY));
-							wm.updateViewLayout(ll, parameters);
+							parameters.x = (int) (x + (event.getRawX() - X));
+							parameters.y = (int) (y + (event.getRawY() - Y));
 						break;
 					}
+					wm.updateViewLayout(ll, parameters);
 					return false;
 				}
 			});	
@@ -103,4 +79,21 @@ public class FloatingView extends Service {
         super.onDestroy();
         stopSelf();
     }
+	private Drawable getDrawableWithRadius() {
+		GradientDrawable gradientDrawable   =   new GradientDrawable();
+		gradientDrawable.setCornerRadii(
+			new float[]{
+				25, // Top    Left  Start 
+				25, // Top    Left  Top
+				25, // Top    Right Top
+				25, // Top    Right End
+				25, // Bottom Right End
+				25, // Bottom Right Bottom
+				25, // Bottom Left  Bottom
+				25  // Bottom Left  Start
+			}
+		);
+		gradientDrawable.setColor(Color.argb(128, 255, 128, 0));
+		return gradientDrawable;
+	}
 }
